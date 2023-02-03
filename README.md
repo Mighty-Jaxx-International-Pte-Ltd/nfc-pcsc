@@ -1,5 +1,10 @@
 # nfc-pcsc
 
+*****************************************************
+**      FOR STRANGER THINGS NFC READER             **
+**   JUST TYPE 'npm run example' in the terminal   **
+*****************************************************
+
 [![npm](https://img.shields.io/npm/v/nfc-pcsc.svg)](https://www.npmjs.com/package/nfc-pcsc)
 [![build status](https://img.shields.io/travis/pokusew/nfc-pcsc/master.svg)](https://travis-ci.org/pokusew/nfc-pcsc)
 [![nfc-pcsc channel on discord](https://img.shields.io/badge/discord-join%20chat-61dafb.svg)](https://discord.gg/bg3yazg)

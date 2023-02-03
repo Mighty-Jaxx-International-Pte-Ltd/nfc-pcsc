@@ -1,5 +1,5 @@
 "use strict";
-
+require('dotenv').config();
 // #############
 // Example: Reading and writing data
 // - should work well with any compatible PC/SC card reader
@@ -36,26 +36,31 @@ nfc.on('reader', async reader => {
 	// };
 
 	reader.on('card', async card => {
+		const roomID = process.env.ROOM_ID;
+		const option = process.env.OPTION;
 
 		pretty.info(`card detected`, reader, card);
-
+		pretty.info(`Loading reader for room: ${roomID} and option: ${option}`);
 		// example reading 4 bytes assuming containing 16bit integer
 		// !!! note that we don't need 4 bytes - 16bit integer takes just 2 bytes !!!
 		try {
-
+			const cardUid = card.uid;
+			pretty.info(`Welcome to Stranger Things Event 2023`);
+			pretty.info(`uid is ${cardUid}`);
+			pretty.info(`Sending UID ${cardUid} with room ${roomID} and option ${option} to MJ server`);
 			// reader.read(blockNumber, length, blockSize = 4, packetSize = 16)
 			// - blockNumber - memory block number where to start reading
 			// - length - how many bytes to read
 			// - blockSize - 4 for MIFARE Ultralight, 16 for MIFARE Classic
 			// ! Caution! length must be divisible by blockSize (we have to read the whole block(s))
 
-			const data = await reader.read(4, 4);
+			// const data = await reader.read(4, 4);
 
-			pretty.info(`data read`, reader, data);
+			// pretty.info(`data read`, reader, data);
 
-			const payload = data.readInt16BE(0);
+			// const payload = data.readInt16BE(0);
 
-			pretty.info(`data converted`, reader, payload);
+			// pretty.info(`data converted`, reader, payload);
 
 		} catch (err) {
 			pretty.error(`error when reading data`, reader, err);
@@ -64,25 +69,25 @@ nfc.on('reader', async reader => {
 
 		// example write 4 bytes containing 16bit integer
 		// !!! note that we don't need 16 bytes - 16bit integer takes just 2 bytes !!!
-		try {
+		// try {
 
-			// reader.write(blockNumber, data, blockSize = 4, packetSize = 16)
-			// - blockNumber - memory block number where to start writing
-			// - data - what to write
-			// - blockSize - 4 for MIFARE Ultralight, 16 for MIFARE Classic
-			// ! Caution! data.length must be divisible by blockSize (we have to write the whole block(s))
+		// 	// reader.write(blockNumber, data, blockSize = 4, packetSize = 16)
+		// 	// - blockNumber - memory block number where to start writing
+		// 	// - data - what to write
+		// 	// - blockSize - 4 for MIFARE Ultralight, 16 for MIFARE Classic
+		// 	// ! Caution! data.length must be divisible by blockSize (we have to write the whole block(s))
 
-			const data = Buffer.allocUnsafe(4).fill(0);
-			const randomNumber = Math.round(Math.random() * 1000);
-			data.writeInt16BE(randomNumber, 0);
+		// 	const data = Buffer.allocUnsafe(4).fill(0);
+		// 	const randomNumber = Math.round(Math.random() * 1000);
+		// 	data.writeInt16BE(randomNumber, 0);
 
-			await reader.write(4, data);
+		// 	await reader.write(4, data);
 
-			pretty.info(`data written`, reader, randomNumber, data);
+		// 	pretty.info(`data written`, reader, randomNumber, data);
 
-		} catch (err) {
-			pretty.error(`error when writing data`, reader, err);
-		}
+		// } catch (err) {
+		// 	pretty.error(`error when writing data`, reader, err);
+		// }
 
 
 	});
