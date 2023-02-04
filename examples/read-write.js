@@ -12,13 +12,17 @@ require('dotenv').config();
 import { NFC, TAG_ISO_14443_3, TAG_ISO_14443_4, KEY_TYPE_A, KEY_TYPE_B } from '../src/index';
 import pretty from './pretty-logger';
 
+import { usb, getDeviceList } from 'usb';
+const devices = getDeviceList();
 
 const nfc = new NFC(); // const nfc = new NFC(pretty); // optionally you can pass logger to see internal debug logs
 
 nfc.on('reader', async reader => {
 
-	pretty.info(`device attached`, reader);
-
+	pretty.info(`device attached`, JSON.stringify(reader));
+	// for (const device of devices) {
+	// 	console.log(device); // Legacy device
+	// }
 	// enable when you want to auto-process ISO 14443-4 tags (standard=TAG_ISO_14443_4)
 	// when an ISO 14443-4 is detected, SELECT FILE command with the AID is issued
 	// the response is available as card.data in the card event
@@ -38,8 +42,11 @@ nfc.on('reader', async reader => {
 	reader.on('card', async card => {
 		const roomID = process.env.ROOM_ID;
 		const option = process.env.OPTION;
+		const readerName = reader.name;
 
-		pretty.info(`card detected`, reader, card);
+		pretty.info(`card detected`, card);
+		pretty.info(`reader detected`, JSON.stringify(reader));
+		pretty.info(JSON.stringify(nfc));
 		pretty.info(`Loading reader for room: ${roomID} and option: ${option}`);
 		// example reading 4 bytes assuming containing 16bit integer
 		// !!! note that we don't need 4 bytes - 16bit integer takes just 2 bytes !!!
@@ -47,7 +54,7 @@ nfc.on('reader', async reader => {
 			const cardUid = card.uid;
 			pretty.info(`Welcome to Stranger Things Event 2023`);
 			pretty.info(`uid is ${cardUid}`);
-			pretty.info(`Sending UID ${cardUid} with room ${roomID} and option ${option} to MJ server`);
+			pretty.info(`Sending UID ${cardUid} with room ${roomID}, option ${option} and reader name '${readerName}' to MJ server`);
 			// reader.read(blockNumber, length, blockSize = 4, packetSize = 16)
 			// - blockNumber - memory block number where to start reading
 			// - length - how many bytes to read

@@ -36,7 +36,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src --out-dir dist",
-    "example": "node -r @babel/register examples/read-write.js | tee debug.log",
+    "example": "node -r @babel/register examples/read-write.js | tee -a debug.log",
     "example-basic": "node -r @babel/register examples/basic.js",
     "example-from-readme-3": "node -r @babel/register examples/from-readme-3.js",
     "example-led": "node -r @babel/register examples/led.js",
@@ -51,7 +51,8 @@
   },
   "dependencies": {
     "@pokusew/pcsclite": "^0.6.0",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "usb": "^2.7.0"
   },
   "devDependencies": {
     "@ava/babel": "^1.0.1",
