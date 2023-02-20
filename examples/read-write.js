@@ -14,14 +14,22 @@ import pretty from './pretty-logger';
 
 import { usb, getDeviceList } from 'usb';
 const devices = getDeviceList();
+const axios = require('axios');
+const sound = require("sound-play");
 
 const nfc = new NFC(); // const nfc = new NFC(pretty); // optionally you can pass logger to see internal debug logs
 
+const correctAudio = 'audio/ding.mp3';
+const incorrectAudio = 'audio/buzzer.mp3';
 nfc.on('reader', async reader => {
 
 	pretty.info(`device attached`, JSON.stringify(reader));
+
+	// let idx = 1;
 	// for (const device of devices) {
-	// 	console.log(device); // Legacy device
+	// 	console.log(`device ${idx}: ${device}`); // Legacy device
+	// 	console.log(device);
+	// 	idx++;
 	// }
 	// enable when you want to auto-process ISO 14443-4 tags (standard=TAG_ISO_14443_4)
 	// when an ISO 14443-4 is detected, SELECT FILE command with the AID is issued
@@ -40,17 +48,18 @@ nfc.on('reader', async reader => {
 	// };
 
 	reader.on('card', async card => {
-		const roomID = process.env.ROOM_ID;
-		const option = process.env.OPTION;
-		const readerName = reader.name;
-
-		pretty.info(`card detected`, card);
-		pretty.info(`reader detected`, JSON.stringify(reader));
-		pretty.info(JSON.stringify(nfc));
-		pretty.info(`Loading reader for room: ${roomID} and option: ${option}`);
 		// example reading 4 bytes assuming containing 16bit integer
 		// !!! note that we don't need 4 bytes - 16bit integer takes just 2 bytes !!!
 		try {
+			const roomID = process.env.ROOM_ID;
+			const option = process.env.OPTION;
+			const readerName = reader.name;
+
+			pretty.info(`card detected`, card);
+			pretty.info(`reader detected`, JSON.stringify(reader));
+			pretty.info(JSON.stringify(nfc));
+			pretty.info(`Loading reader for room: ${roomID} and option: ${option}`);
+
 			const cardUid = card.uid;
 			pretty.info(`Welcome to Stranger Things Event 2023`);
 			pretty.info(`uid is ${cardUid}`);
@@ -68,9 +77,45 @@ nfc.on('reader', async reader => {
 			// const payload = data.readInt16BE(0);
 
 			// pretty.info(`data converted`, reader, payload);
+			const url = 'https://mightyjaxx.technology/api/v4/ste-event-space/log-event-space';
+			const data = {
+				eventRoomId: roomID,
+				uId: cardUid,
+				readerName: readerName,
+			};
+			axios.post(url, data)
+			.then(async response => {
+				console.log('Success');
+				console.log(response.data);
+				try {
+					await sound.play(correctAudio);
+					console.log("done");
+				  } catch (error) {
+					console.log('audio success play error', error);
+					console.error(error);
+				  }
+			})
+			.catch(async error => {
+				console.log('Error');
+				console.error(error);
+				try {
+					await sound.play(incorrectAudio);
+					console.log("done");
+				  } catch (error) {
+					console.log('audio success play error', error);
+					console.error(error);
+				  }
+			});
 
 		} catch (err) {
 			pretty.error(`error when reading data`, reader, err);
+			try {
+				await sound.play(incorrectAudio);
+				console.log("done");
+			  } catch (error) {
+				console.log('audio success play error', error);
+				console.error(error);
+			  }
 		}
 
 
@@ -99,8 +144,15 @@ nfc.on('reader', async reader => {
 
 	});
 
-	reader.on('error', err => {
-		pretty.error(`an error occurred`, reader, err);
+	reader.on('error', async err => {
+		pretty.error(`an error occurred on reader`, reader, err);
+		try {
+			await sound.play(incorrectAudio);
+			console.log("done");
+		  } catch (error) {
+			console.log('audio success play error', error);
+			console.error(error);
+		  }
 	});
 
 	reader.on('end', () => {
@@ -110,6 +162,13 @@ nfc.on('reader', async reader => {
 
 });
 
-nfc.on('error', err => {
-	pretty.error(`an error occurred`, err);
+nfc.on('error', async err => {
+	pretty.error(`an error occurred on nfc`, err);
+	try {
+		await sound.play(incorrectAudio);
+		console.log("done");
+	  } catch (error) {
+		console.log('audio success play error', error);
+		console.error(error);
+	  }
 });
