@@ -89,7 +89,7 @@ nfc.on('reader', async reader => {
 				console.log(response.data);
 				try {
 					await sound.play(correctAudio);
-					console.log("done");
+					console.log('done playing: correctAudio');
 				  } catch (error) {
 					console.log('audio success play error', error);
 					console.error(error);
@@ -100,7 +100,7 @@ nfc.on('reader', async reader => {
 				console.error(error);
 				try {
 					await sound.play(incorrectAudio);
-					console.log("done");
+					console.log('done playing: incorrectAudio');
 				  } catch (error) {
 					console.log('audio success play error', error);
 					console.error(error);
@@ -111,7 +111,7 @@ nfc.on('reader', async reader => {
 			pretty.error(`error when reading data`, reader, err);
 			try {
 				await sound.play(incorrectAudio);
-				console.log("done");
+				console.log('done playing: incorrectAudio');
 			  } catch (error) {
 				console.log('audio success play error', error);
 				console.error(error);
@@ -148,7 +148,7 @@ nfc.on('reader', async reader => {
 		pretty.error(`an error occurred on reader`, reader, err);
 		try {
 			await sound.play(incorrectAudio);
-			console.log("done");
+			console.log('done playing: incorrectAudio');
 		  } catch (error) {
 			console.log('audio success play error', error);
 			console.error(error);
@@ -166,7 +166,7 @@ nfc.on('error', async err => {
 	pretty.error(`an error occurred on nfc`, err);
 	try {
 		await sound.play(incorrectAudio);
-		console.log("done");
+		console.log('done playing: incorrectAudio');
 	  } catch (error) {
 		console.log('audio success play error', error);
 		console.error(error);

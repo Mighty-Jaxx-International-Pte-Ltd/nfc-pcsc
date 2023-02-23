@@ -36,7 +36,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src --out-dir dist",
-    "example": "node -r @babel/register examples/read-write.js | tee -a debug.log",
+    "st-reader": "node -r @babel/register examples/read-write.js | tee -a debug.log",
+    "example": "node -r @babel/register examples/read-write.js",
     "example-basic": "node -r @babel/register examples/basic.js",
     "example-from-readme-3": "node -r @babel/register examples/from-readme-3.js",
     "example-led": "node -r @babel/register examples/led.js",

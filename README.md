@@ -2,7 +2,7 @@
 
 *****************************************************
 **      FOR STRANGER THINGS NFC READER             **
-**   JUST TYPE 'npm run example' in the terminal   **
+**   JUST TYPE 'npm run st-reader' in the terminal   **
 *****************************************************
 
 [![npm](https://img.shields.io/npm/v/nfc-pcsc.svg)](https://www.npmjs.com/package/nfc-pcsc)
