@@ -4,8 +4,11 @@
 **      FOR STRANGER THINGS NFC READER             **
 **   JUST TYPE 'npm run st-reader' in the terminal **
 *****************************************************
+
 We are using https://github.com/peter-murray/node-hue-api to control the Hue Lights
 
+**ARCHITECTURE**
+For every time the NFC chip is scanned on the NFC Reader. We will store the uid and NFC Reader name into a job queue and then trigger an audio sound and light up a bulb using the Philips Hue Bridge
 
 [![npm](https://img.shields.io/npm/v/nfc-pcsc.svg)](https://www.npmjs.com/package/nfc-pcsc)
 [![build status](https://img.shields.io/travis/pokusew/nfc-pcsc/master.svg)](https://travis-ci.org/pokusew/nfc-pcsc)

@@ -31,6 +31,7 @@ captures
 
 
 ### PROJECT
+*.db-journal
 
 # node, npm
 node_modules/

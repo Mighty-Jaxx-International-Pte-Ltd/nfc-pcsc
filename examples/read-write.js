@@ -34,13 +34,14 @@ let LIGHT_ID = 0;
 let secure = null;
 
 //for SQLite
-const options = { verbose: console.log };
-const db = require('better-sqlite3')('ste.db', options);
+const dbName = 'ste.db';
+// const options = { verbose: console.log };
+// const db = require('better-sqlite3')(dbName, options);
 
-//
+// //
 const VerySimpleQueue = require('very-simple-queue');
 const verySimpleQueue = new VerySimpleQueue('sqlite3', {
-	filePath: '/tmp/testdb.sqlite3',
+	filePath: dbName,
   });
 
 
@@ -91,6 +92,7 @@ async function getBridge() {
 nfc.on('reader', async reader => {
 
 	getBridge();
+	await verySimpleQueue.createJobsDbStructure(); // Only the first time
 	pretty.info(`device attached`, JSON.stringify(reader));
 
 	// let idx = 1;
@@ -151,10 +153,11 @@ nfc.on('reader', async reader => {
 				uId: cardUid,
 				readerName: readerName,
 			};
-			const dataString = JSON.stringify(data);
+			//const dataString = JSON.stringify(data);
+			await verySimpleQueue.pushJob(data, 'myQueue');
 			// const row = db.prepare('select * from `ste-event`').all();
-			const stmt = db.prepare('INSERT INTO ste_event (data) VALUES (?)');
-			stmt.run(dataString);
+			//const stmt = db.prepare('INSERT INTO ste_event (data) VALUES (?)');
+			//stmt.run(dataString);
 			//axios.post(url, data)
 			//.then(async response => {
 				console.log('Success');
