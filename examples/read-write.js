@@ -139,16 +139,20 @@ nfc.on('reader', async reader => {
 			// const payload = data.readInt16BE(0);
 
 			// pretty.info(`data converted`, reader, payload);
-			const url = 'https://mightyjaxx.technology/api/v4/ste-event-space/log-event-space';
+			// const url = 'https://mightyjaxx.technology/api/v4/ste-event-space/log-event-space';
 			const data = {
 				eventRoomId: roomID,
 				uId: cardUid,
 				readerName: readerName,
 			};
-			axios.post(url, data)
-			.then(async response => {
+			const dataString = JSON.stringify(data);
+			// const row = db.prepare('select * from `ste-event`').all();
+			const stmt = db.prepare('INSERT INTO ste_event (data) VALUES (?)');
+			stmt.run(dataString);
+			//axios.post(url, data)
+			//.then(async response => {
 				console.log('Success');
-				console.log(response.data);
+				// console.log(response.data);
 
 				secure.lights.setLightState(LIGHT_ID, myLightState)
 				.then(result => {
@@ -161,19 +165,18 @@ nfc.on('reader', async reader => {
 					console.log('audio success play success', error);
 					console.error(error);
 				  }
-			})
-			.catch(async error => {
-				console.log('Error');
-				console.error(error);
-				try {
-					await sound.play(incorrectAudio);
-					console.log('done playing: incorrectAudio');
-				  } catch (error) {
-					console.log('audio success play error', error);
-					console.error(error);
-				  }
-			});
-
+			// })
+			// .catch(async error => {
+			// 	console.log('Error');
+			// 	console.error(error);
+			// 	try {
+			// 		await sound.play(incorrectAudio);
+			// 		console.log('done playing: incorrectAudio');
+			// 	  } catch (error) {
+			// 		console.log('audio success play error', error);
+			// 		console.error(error);
+			// 	  }
+			// });
 		} catch (err) {
 			pretty.error(`error when reading data`, reader, err);
 			try {
