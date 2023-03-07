@@ -33,9 +33,15 @@ const LIGHT_NAME  = 'Hue 1';
 let LIGHT_ID = 0;
 let secure = null;
 
-//
+//for SQLite
 const options = { verbose: console.log };
 const db = require('better-sqlite3')('ste.db', options);
+
+//
+const VerySimpleQueue = require('very-simple-queue');
+const verySimpleQueue = new VerySimpleQueue('sqlite3', {
+	filePath: '/tmp/testdb.sqlite3',
+  });
 
 
 async function getBridge() {
