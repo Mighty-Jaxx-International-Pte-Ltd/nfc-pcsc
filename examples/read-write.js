@@ -22,7 +22,7 @@ const nfc = new NFC(); // const nfc = new NFC(pretty); // optionally you can pas
 const correctAudio = 'audio/ding.mp3';
 const incorrectAudio = 'audio/buzzer.mp3';
 
-//
+//FOR PHILIPS HUE
 const { discovery, v3 } = require('node-hue-api');
 const api = v3.api;
 const host = '192.168.128.195';
@@ -32,6 +32,11 @@ const myLightState = new LightState().alertShort();
 const LIGHT_NAME  = 'Hue 1';
 let LIGHT_ID = 0;
 let secure = null;
+
+//
+const options = { verbose: console.log };
+const db = require('better-sqlite3')('ste.db', options);
+
 
 async function getBridge() {
 	// This will do a UPNP search for bridges on the local network
@@ -52,7 +57,7 @@ async function getBridge() {
 			.then(lights => {
 				LIGHT_ID = lights[0].id;
 				// Display the details of the first light match
-				console.log('light found: ' + JSON.stringify(lights[0], null, 2));
+				//console.log('light found: ' + JSON.stringify(lights[0], null, 2));
 			});
 
 		// secure.lights.getAll()
