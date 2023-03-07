@@ -21,8 +21,65 @@ const nfc = new NFC(); // const nfc = new NFC(pretty); // optionally you can pas
 
 const correctAudio = 'audio/ding.mp3';
 const incorrectAudio = 'audio/buzzer.mp3';
+
+//
+const { discovery, v3 } = require('node-hue-api');
+const api = v3.api;
+const host = '192.168.128.195';
+const username = 'Blm2OVZZaMXokdWLNY4UClAodxaYE7rPTmhW3Dnk';
+const LightState = require('node-hue-api').v3.lightStates.LightState;
+const myLightState = new LightState().alertShort();
+const LIGHT_NAME  = 'Hue 1';
+let LIGHT_ID = 0;
+let secure = null;
+
+async function getBridge() {
+	// This will do a UPNP search for bridges on the local network
+	try{
+	// 	const results = await discovery.mdnsSearch();
+	// 	// Results will be an array of bridges that were found
+	// 	console.log('Hue Bridges Found: ' + JSON.stringify(results, null, 2));
+
+		// console.log(secure);
+		secure = await api.createLocal(host).connect(username);
+		console.log('lights');
+		// secure.lights.getLightState(LIGHT_ID)
+		// .then(attributesAndState => {
+		// 	// Display the details of the light
+		// 	console.log(JSON.stringify(attributesAndState, null, 2));
+		// });
+		secure.lights.getLightByName(LIGHT_NAME)
+			.then(lights => {
+				LIGHT_ID = lights[0].id;
+				// Display the details of the first light match
+				console.log('light found: ' + JSON.stringify(lights[0], null, 2));
+			});
+
+		// secure.lights.getAll()
+		// 	.then(allLights => {
+		// 		// Display the lights from the bridge
+		// 		// secure.lights.getLightState(LIGHT_ID)
+		// 		// .then(attributesAndState => {
+		// 		// 	// Display the details of the light
+		// 		// 	console.log(JSON.stringify(attributesAndState, null, 2));
+		// 		// });
+		// 		// allLights.forEach(element => {
+		// 		// 	console.log(element.id);
+		// 		// });
+		// 		//console.log(JSON.stringify(allLights, null, 2));
+		// 	});
+		// const light = (await secure.lights.get)[0]
+		// const state = stateFromOptions(options)
+		// await secure.lights.setLightState(light.id, state)
+	} catch (err) {
+		console.log('Error searching for bridges', err);
+	}
+}
+
+//getBridge();
 nfc.on('reader', async reader => {
 
+	getBridge();
 	pretty.info(`device attached`, JSON.stringify(reader));
 
 	// let idx = 1;
@@ -87,11 +144,16 @@ nfc.on('reader', async reader => {
 			.then(async response => {
 				console.log('Success');
 				console.log(response.data);
+
+				secure.lights.setLightState(LIGHT_ID, myLightState)
+				.then(result => {
+					console.log(`Light state change for ${LIGHT_NAME} was successful? ${result}`);
+				})
 				try {
 					await sound.play(correctAudio);
 					console.log('done playing: correctAudio');
 				  } catch (error) {
-					console.log('audio success play error', error);
+					console.log('audio success play success', error);
 					console.error(error);
 				  }
 			})

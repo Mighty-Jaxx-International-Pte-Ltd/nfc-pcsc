@@ -2,8 +2,10 @@
 
 *****************************************************
 **      FOR STRANGER THINGS NFC READER             **
-**   JUST TYPE 'npm run st-reader' in the terminal   **
+**   JUST TYPE 'npm run st-reader' in the terminal **
 *****************************************************
+We are using https://github.com/peter-murray/node-hue-api to control the Hue Lights
+
 
 [![npm](https://img.shields.io/npm/v/nfc-pcsc.svg)](https://www.npmjs.com/package/nfc-pcsc)
 [![build status](https://img.shields.io/travis/pokusew/nfc-pcsc/master.svg)](https://travis-ci.org/pokusew/nfc-pcsc)
