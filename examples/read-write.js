@@ -34,9 +34,10 @@ let LIGHT_ID = 0;
 let secure = null;
 
 //for SQLite
-const dbName = 'ste.db';
+const dbName = process.env.DB_NAME;
 // const options = { verbose: console.log };
 // const db = require('better-sqlite3')(dbName, options);
+const queueName = process.env.QUEUE_NAME;
 
 // //
 const VerySimpleQueue = require('very-simple-queue');
@@ -88,12 +89,37 @@ async function getBridge() {
 	}
 }
 
-//getBridge();
+function sendData(payload) {
+	console.log('payload', payload);
+	const url = 'https://staging.mightyjaxx.technology/api/v4/ste-event-space/log-event-space';
+	axios.post(url, payload)
+	.then(async response => {
+		console.log('Success posting to server');
+		console.log(response.data);
+	})
+	.catch(async error => {
+		console.log(`Error posting to server ${error}`);
+		console.error(error);
+	});
+}
+
+async function processJobQueue() {
+	console.log(`processJobQueue on ${queueName}`);
+	await verySimpleQueue.work((payload) =>
+	sendData(payload)
+	, { queue: queueName });
+}
+
+getBridge();
 nfc.on('reader', async reader => {
 
-	getBridge();
-	await verySimpleQueue.createJobsDbStructure(); // Only the first time
+	//getBridge();
+
+	await verySimpleQueue.createJobsDbStructure();//init the table
+	//processJobQueue();
+
 	pretty.info(`device attached`, JSON.stringify(reader));
+	console.log(`${queueName} on DB ${dbName} is ready`);
 
 	// let idx = 1;
 	// for (const device of devices) {
@@ -133,7 +159,20 @@ nfc.on('reader', async reader => {
 			const cardUid = card.uid;
 			pretty.info(`Welcome to Stranger Things Event 2023`);
 			pretty.info(`uid is ${cardUid}`);
-			pretty.info(`Sending UID ${cardUid} with room ${roomID}, option ${option} and reader name '${readerName}' to MJ server`);
+
+			const options = {
+				timeZone: 'Asia/Singapore',
+				year: 'numeric',
+				month: 'short',
+				day: '2-digit',
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit',
+			  };
+			const date = new Date();
+			const formattedDate = date.toLocaleString('en-GB', options);
+
+			pretty.info(`Sending UID ${cardUid} with room ${roomID}, option ${option} and reader name '${readerName}' which was tapped at ${formattedDate} to MJ server`);
 			// reader.read(blockNumber, length, blockSize = 4, packetSize = 16)
 			// - blockNumber - memory block number where to start reading
 			// - length - how many bytes to read
@@ -149,12 +188,15 @@ nfc.on('reader', async reader => {
 			// pretty.info(`data converted`, reader, payload);
 			// const url = 'https://mightyjaxx.technology/api/v4/ste-event-space/log-event-space';
 			const data = {
+				tappedAt: formattedDate,
 				eventRoomId: roomID,
 				uId: cardUid,
 				readerName: readerName,
 			};
 			//const dataString = JSON.stringify(data);
-			await verySimpleQueue.pushJob(data, 'myQueue');
+			console.log(`Sending data: ${JSON.stringify(data)} to ${queueName} on DB ${dbName}`);
+			await verySimpleQueue.pushJob(data, queueName);
+			//processJobQueue();
 			// const row = db.prepare('select * from `ste-event`').all();
 			//const stmt = db.prepare('INSERT INTO ste_event (data) VALUES (?)');
 			//stmt.run(dataString);
